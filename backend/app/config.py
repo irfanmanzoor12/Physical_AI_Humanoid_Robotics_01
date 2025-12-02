@@ -43,12 +43,23 @@ class Settings(BaseSettings):
     QDRANT_URL: str = os.getenv("QDRANT_URL", "https://your-cluster.qdrant.io")
     QDRANT_API_KEY: str = os.getenv("QDRANT_API_KEY", "")
     QDRANT_COLLECTION_NAME: str = "chapter_1_physical_ai"
-    VECTOR_DIMENSION: int = 1536  # OpenAI text-embedding-3-small
+
+    @property
+    def VECTOR_DIMENSION(self) -> int:
+        """Dynamic vector dimension based on embedding provider"""
+        if self.EMBEDDING_PROVIDER == "local":
+            return 384  # all-MiniLM-L6-v2
+        else:
+            return 1536  # OpenAI text-embedding-3-small
 
     # OpenAI
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_MODEL: str = "gpt-4o"
     OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
+
+    # Hybrid Embeddings - Choose provider: "openai" or "local"
+    EMBEDDING_PROVIDER: str = os.getenv("EMBEDDING_PROVIDER", "local")
+    LOCAL_EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"  # Fast & efficient 384-dim model
 
     # Frontend URL
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")

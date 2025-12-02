@@ -10,9 +10,9 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from openai import AsyncOpenAI
 from app.config import settings
 from app.database.qdrant import upsert_documents, init_qdrant
+from app.chat.rag_engine import rag_engine
 
 
 # Chapter 1 Content - Physical AI & Humanoid Robotics
@@ -255,17 +255,16 @@ CHAPTER_1_CONTENT = [
 
 
 async def generate_embeddings(texts: list[str]) -> list[list[float]]:
-    """Generate embeddings using OpenAI"""
-    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-
+    """Generate embeddings using HYBRID system (Local or OpenAI)"""
     print(f"  Generating embeddings for {len(texts)} sections...")
+    print(f"  Using: {settings.EMBEDDING_PROVIDER.upper()} embeddings")
 
-    response = await client.embeddings.create(
-        model=settings.OPENAI_EMBEDDING_MODEL,
-        input=texts
-    )
+    embeddings = []
+    for text in texts:
+        embedding = await rag_engine.generate_embedding(text)
+        embeddings.append(embedding)
 
-    return [item.embedding for item in response.data]
+    return embeddings
 
 
 async def index_chapter_content():

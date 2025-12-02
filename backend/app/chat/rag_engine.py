@@ -1,5 +1,5 @@
 """
-RAG Engine - OpenAI with MCP Context7
+RAG Engine - Hybrid Embeddings (Local/OpenAI) with MCP Context7
 Multi-context retrieval-augmented generation
 """
 
@@ -16,6 +16,17 @@ logger = logging.getLogger(__name__)
 # OpenAI client
 openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
+# Local embedding model (lazy load)
+_local_embedding_model = None
+
+def get_local_embedding_model():
+    """Lazy load local embedding model"""
+    global _local_embedding_model
+    if _local_embedding_model is None:
+        from sentence_transformers import SentenceTransformer
+        logger.info(f"Loading local embedding model: {settings.LOCAL_EMBEDDING_MODEL}")
+        _local_embedding_model = SentenceTransformer(settings.LOCAL_EMBEDDING_MODEL)
+    return _local_embedding_model
 
 class MCPContext7Manager:
     """
@@ -96,13 +107,22 @@ class RAGEngine:
         self.context_manager = MCPContext7Manager()
 
     async def generate_embedding(self, text: str) -> List[float]:
-        """Generate embedding for text"""
+        """Generate embedding for text - Hybrid mode (local or OpenAI)"""
         try:
-            response = await openai_client.embeddings.create(
-                model=settings.OPENAI_EMBEDDING_MODEL,
-                input=text
-            )
-            return response.data[0].embedding
+            if settings.EMBEDDING_PROVIDER == "local":
+                # Use local sentence-transformers (FREE & FAST)
+                model = get_local_embedding_model()
+                embedding = model.encode(text, convert_to_tensor=False)
+                logger.info(f"Generated LOCAL embedding (dim: {len(embedding)})")
+                return embedding.tolist()
+            else:
+                # Use OpenAI embeddings (CLOUD & COSTS MONEY)
+                response = await openai_client.embeddings.create(
+                    model=settings.OPENAI_EMBEDDING_MODEL,
+                    input=text
+                )
+                logger.info(f"Generated OPENAI embedding (dim: {len(response.data[0].embedding)})")
+                return response.data[0].embedding
         except Exception as e:
             logger.error(f"Embedding generation failed: {str(e)}")
             raise

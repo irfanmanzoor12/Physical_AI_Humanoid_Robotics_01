@@ -25,6 +25,10 @@ qdrant-client==1.7.3
 # OpenAI
 openai==1.10.0
 
+# Local Embeddings (Hybrid Mode)
+sentence-transformers==2.3.1
+torch>=2.0.0
+
 # CORS and Security
 python-multipart==0.0.6
 

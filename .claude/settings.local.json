@@ -20,7 +20,9 @@
       "Bash(taskkill //F //PID 28976)",
       "Bash(git push:*)",
       "Bash(git reset:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rebase:*)"
     ],
     "deny": [],
     "ask": []
