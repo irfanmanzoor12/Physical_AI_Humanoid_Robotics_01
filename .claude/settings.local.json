@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(dir:*)",
+      "Bash(copy:*)",
+      "Bash(python -c:*)",
+      "Bash(.venvScriptspython.exe -m pip install email-validator==2.1.0)",
+      "Bash(.venv/Scripts/python.exe -m pip install:*)",
+      "Bash(uv pip install:*)",
+      "Bash(timeout 5 uvicorn:*)",
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(curl:*)",
+      "Bash(timeout 10 bash:*)",
+      "Bash(npm start)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(set PORT=3001)",
+      "Bash(PORT=3001 npm start)",
+      "Bash(taskkill //F //PID 28976)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
