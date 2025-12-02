@@ -109,3 +109,7 @@ async def health_check():
         "database": "connected",
         "vector_store": "connected"
     }
+
+
+# Vercel serverless handler
+handler = app
